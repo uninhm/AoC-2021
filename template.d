@@ -1,4 +1,5 @@
 import std.stdio;
+import std.string;
 
 void main() {
     File input = File("input.txt", "r");
