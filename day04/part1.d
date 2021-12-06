@@ -1,6 +1,5 @@
 import std.stdio;
 import std.string;
-import std.container: DList;
 import std.conv: to;
 import std.typecons: tuple, Tuple;
 import std.algorithm: map, filter;
@@ -59,15 +58,15 @@ void main() {
         .map!(to!int)
         .array;
     string line = input.readln;
-    auto boards = new DList!(int[][])();
-    auto indices = new DList!(Tuple!(int, int)[int])();
+    int[][][] boards;
+    Tuple!(int, int)[int][] indices;
     int count = 0;
     int i = 0;
     while (!line.empty()) {
         if (line == "\n") {
-            boards.insertBack(new int[][](5, 5));
+            boards ~= new int[][](5, 5);
             Tuple!(int, int)[int] m;
-            indices.insertBack(m);
+            indices ~= m;
             i = 0;
             ++count;
             line = input.readln;
@@ -80,8 +79,8 @@ void main() {
             .array;
 
         for (int j = 0; j < 5; ++j) {
-            boards.back[i][j] = row[j];
-            indices.back[row[j]] = tuple(i, j);
+            boards[$-1][i][j] = row[j];
+            indices[$-1][row[j]] = tuple(i, j);
         }
         ++i;
 
@@ -89,17 +88,15 @@ void main() {
     }
 
     auto checkboards = new bool[5][5][](count);
-    auto aboards = boards.array;
-    auto aindices = indices.array;
 
-    auto result = solve(numbers, aboards, aindices, checkboards);
+    auto result = solve(numbers, boards, indices, checkboards);
     int board_i = result[0];
     int n = result[1];
     int a = 0;
     for (i = 0; i < 5; ++i)
         for (int j = 0; j < 5; ++j)
             if (!checkboards[board_i][i][j])
-                a += aboards[board_i][i][j];
+                a += boards[board_i][i][j];
 
     writeln(n * a);
 }
