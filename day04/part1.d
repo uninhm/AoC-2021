@@ -15,12 +15,11 @@ bool all(bool[] arr) {
 
 Tuple!(int, int) solve(
     int[] numbers,
-    int[][][] boards,
     Tuple!(int, int)[int][] indices,
     bool[5][5][] checkboards
 ) {
     foreach (int number; numbers) {
-        for (int i = 0; i < boards.length; ++i) {
+        for (int i = 0; i < checkboards.length; ++i) {
             Tuple!(int, int)* p = number in indices[i];
             if (p !is null) {
                 auto index = *p;
@@ -89,7 +88,7 @@ void main() {
 
     auto checkboards = new bool[5][5][](count);
 
-    auto result = solve(numbers, boards, indices, checkboards);
+    auto result = solve(numbers, indices, checkboards);
     int board_i = result[0];
     int n = result[1];
     int a = 0;
