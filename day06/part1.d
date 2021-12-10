@@ -8,8 +8,7 @@ import std.array;
 
 void main() {
     File input = File("input.txt", "r");
-    // int[] l = input.readln.chomp.split(",").map!(to!int).array;
-    int[] l = [0];
+    int[] l = input.readln.chomp.split(",").map!(to!int).array;
     for (int i = 0; i < 80; ++i) {
         int[] new_generation;
         foreach (elem; l)
