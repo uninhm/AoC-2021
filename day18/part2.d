@@ -29,6 +29,14 @@ class PairNum: Num {
         this.parent = parent;
     }
 
+    Num* get_child_by_idx(int idx) {
+        if (idx == 0)
+            return &left;
+        if (idx == 1)
+            return &right;
+        assert(0);
+    }
+
     override string repr() {
         return "[%s, %s]".format(this.left.repr, this.right.repr);
     }
@@ -47,56 +55,37 @@ class PairNum: Num {
     override bool reduce_by_explosion() {
         PairNum e = this.find_explosion();
         if (!e) return false;
-        if (e == e.parent.left) {
-            e.parent.left = new RegNum(0, e.parent);
 
-            Num x = e.parent.right;
-            while (auto px = cast(PairNum)x)
-                x = px.left;
-            (cast(RegNum)x).value += (cast(RegNum)e.right).value;
-
-            x = e.parent;
-            bool flag = true;
-            while (x == x.parent.left) {
-                x = x.parent;
-                if (!x.parent) {
-                    flag = false;
-                    break;
-                }
-            }
-
-            if (flag) {
-                x = x.parent.left;
-                while (auto px = cast(PairNum)x)
-                    x = px.right;
-                (cast(RegNum)x).value += (cast(RegNum)e.left).value;
-            }
-        } else if (e == e.parent.right) {
-            e.parent.right = new RegNum(0, e.parent);
-
-            Num x = e.parent.left;
-            while (auto px = cast(PairNum)x)
-                x = px.right;
-            (cast(RegNum)x).value += (cast(RegNum)e.left).value;
-
-            x = e.parent;
-            bool flag = true;
-            while (x == x.parent.right) {
-                x = x.parent;
-                if (!x.parent) {
-                    flag = false;
-                    break;
-                }
-            }
-
-            if (flag) {
-                x = x.parent.right;
-                while (auto px = cast(PairNum)x)
-                    x = px.left;
-                (cast(RegNum)x).value += (cast(RegNum)e.right).value;
-            }
-        } else {
+        int side;
+        if (e == e.parent.left)
+            side = 0;
+        else if (e == e.parent.right)
+            side = 1;
+        else
             assert(0);
+
+        *e.parent.get_child_by_idx(side) = new RegNum(0, e.parent);
+
+        Num x = *e.parent.get_child_by_idx(!side);
+        while (auto px = cast(PairNum)x)
+            x = *px.get_child_by_idx(side);
+        (cast(RegNum)x).value += (cast(RegNum)*e.get_child_by_idx(!side)).value;
+
+        x = e.parent;
+        bool flag = true;
+        while (x == *x.parent.get_child_by_idx(side)) {
+            x = x.parent;
+            if (!x.parent) {
+                flag = false;
+                break;
+            }
+        }
+
+        if (flag) {
+            x = *x.parent.get_child_by_idx(side);
+            while (auto px = cast(PairNum)x)
+                x = *px.get_child_by_idx(!side);
+            (cast(RegNum)x).value += (cast(RegNum)*e.get_child_by_idx(side)).value;
         }
         return true;
     }
